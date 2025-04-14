@@ -21,10 +21,9 @@ npm create vite@latest . -- --template react-ts
 > **TailwindCSS v4 requires Node.js >=18.**
 
 ```sh
-npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
-npx tailwindcss init -p
+npm install tailwindcss @tailwindcss/vite
 ```
-- This creates `tailwind.config.js` and `postcss.config.js`.
+- This uses the new Tailwind v4 plugin for Vite, which is the recommended approach.
 
 ### Tailwind v4-Specific Configuration
 - The `content` array in `tailwind.config.js` should include all relevant file globs:
@@ -37,14 +36,13 @@ content: [
 ```
 - Tailwind v4 uses a new Just-in-Time engine by default and has breaking changes from v3. Refer to the [Tailwind v4 release notes](https://tailwindcss.com/docs/upgrade-guide) for details.
 
-### Add Tailwind Directives to CSS
-- In `src/index.css` (or create it if missing):
+### Add Tailwind to CSS (v4 Style)
+- In `src/index.css` (or create it if missing), replace all content with:
 
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 ```
+- This is the new, simpler import style for Tailwind v4. Do **not** use the old `@tailwind base;`, `@tailwind components;`, or `@tailwind utilities;` directives.
 - Import this CSS in your `main.tsx` or `App.tsx` if not already present.
 
 ---
@@ -74,19 +72,13 @@ npm install lucide-react
 ```sh
 npm install @mdx-js/react @mdx-js/rollup
 ```
-- Add the [vite-plugin-mdx](https://github.com/mdx-js/mdx/tree/main/packages/vite-plugin-mdx) for seamless MDX integration:
-
-```sh
-npm install vite-plugin-mdx
-```
-- Update `vite.config.ts` to include the MDX plugin:
 
 ```ts
 import mdx from 'vite-plugin-mdx';
 // ...
 export default defineConfig({
   // ...
-  plugins: [react(), mdx()],
+  plugins: [...plugins, mdx()],
 });
 ```
 
@@ -108,7 +100,33 @@ dist
 
 ---
 
-## 7. Verify Setup
+## 7. TypeScript Configuration: Why Three tsconfig Files?
+
+Modern Vite projects often use three TypeScript config files for clarity and best practices:
+
+### 1. `tsconfig.json` (Root)
+- **Purpose:** Main entry point for TypeScript configuration.
+- **Role:** References other config files (like `tsconfig.app.json` and `tsconfig.node.json`) using the `references` field.
+- **Benefit:** Enables [Project References](https://www.typescriptlang.org/docs/handbook/project-references.html) for faster builds and better organization.
+
+### 2. `tsconfig.app.json`
+- **Purpose:** Settings specific to your application (browser) code.
+- **Role:** Used by Vite and your IDE for type-checking and compiling your app’s source files (typically in `src/`).
+- **Benefit:** Allows tailored settings for app code, such as module resolution, JSX, and strictness.
+
+### 3. `tsconfig.node.json`
+- **Purpose:** Settings for Node.js-specific files (e.g., `vite.config.ts`, scripts, or server-side code).
+- **Role:** Ensures Node-specific files are type-checked with the correct environment (Node.js types, CommonJS/ESM modules).
+- **Benefit:** Prevents conflicts between browser and Node.js code, and ensures correct type-checking for both environments.
+
+#### Why set `baseUrl` and `paths` in both?
+- **`baseUrl` and `paths`** are used for path aliasing (e.g., `@/components/...`).
+- Placing them in both `tsconfig.json` and `tsconfig.app.json` ensures that path aliases are recognized project-wide, including by tools that only look at the root config, and by your app source code during development and build.
+- This avoids “Cannot find module” errors or broken imports in different contexts.
+
+---
+
+## 8. Verify Setup
 - Run the dev server:
 ```sh
 npm run dev
@@ -117,12 +135,13 @@ npm run dev
 
 ---
 
-## 8. References
+## 9. References
 - [Vite + React Guide](https://vitejs.dev/guide/)
 - [TailwindCSS v4 Docs](https://tailwindcss.com/docs/installation)
 - [shadcn/ui for Vite](https://ui.shadcn.com/docs/installation/vite)
 - [MDX for Vite](https://mdxjs.com/getting-started/)
+- [TypeScript Project References](https://www.typescriptlang.org/docs/handbook/project-references.html)
 
 ---
 
-**You are now ready to start building your static blog with a modern, maintainable stack!** 
+**You are now ready to start building your static blog with a modern, maintainable stack!**
