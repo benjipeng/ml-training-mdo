@@ -1,0 +1,108 @@
+---
+title: Styling with Tailwind CSS
+description: A comprehensive guide to using Tailwind CSS in your projects
+date: 2024-04-10
+tags: [css, tailwind, styling]
+---
+
+# Styling with Tailwind CSS
+
+**Published on April 10, 2024**
+
+Tailwind CSS has revolutionized how developers approach styling in web applications. Instead of writing custom CSS, you can rapidly build modern designs directly in your markup using utility classes.
+
+## Why Tailwind CSS?
+
+Tailwind provides a utility-first approach that offers several advantages:
+
+- 🚀 **Rapid development** - Build UIs quickly without context switching between files
+- 🔄 **Consistent design** - Work within the constraints of a well-defined design system
+- 📱 **Responsive by default** - Built-in responsive modifiers make responsive design easy
+- 🛠️ **Highly customizable** - Extend and configure to match your design needs
+- 🧩 **Component extraction** - Create reusable patterns with utilities
+
+## Getting Started with Tailwind
+
+Installing Tailwind in a Vite project is straightforward:
+
+```bash
+npm install tailwindcss @tailwindcss/vite
+```
+
+For Tailwind v4 (the latest version), your CSS becomes even simpler:
+
+```css
+@import "tailwindcss";
+```
+
+## Utility-First Approach
+
+The core concept of Tailwind is using small utility classes to build complex designs:
+
+```jsx
+<div className="flex items-center p-6 max-w-sm mx-auto bg-white rounded-xl shadow-lg space-x-4">
+  <div className="shrink-0">
+    <img className="h-12 w-12" src="/img/logo.svg" alt="Logo" />
+  </div>
+  <div>
+    <h4 className="text-xl font-medium text-black">Tailwind CSS</h4>
+    <p className="text-slate-500">Utility-first CSS framework</p>
+  </div>
+</div>
+```
+
+## Responsive Design with Tailwind
+
+Tailwind makes responsive design straightforward with intuitive breakpoint prefixes:
+
+```jsx
+<div className="text-center sm:text-left md:text-right lg:text-justify">
+  This text changes alignment at different screen sizes!
+</div>
+```
+
+Common breakpoints include:
+- `sm:` - 640px and above
+- `md:` - 768px and above
+- `lg:` - 1024px and above
+- `xl:` - 1280px and above
+- `2xl:` - 1536px and above
+
+## Dark Mode
+
+Tailwind v4 makes dark mode implementation incredibly simple:
+
+```jsx
+<div className="bg-white text-black dark:bg-gray-800 dark:text-white">
+  This element adapts to light/dark mode
+</div>
+```
+
+## Extracting Components
+
+While utility classes are powerful, you can extract common patterns:
+
+```jsx
+// Button.jsx
+export function Button({ children, variant = "primary" }) {
+  const baseStyles = "px-4 py-2 rounded font-medium focus:outline-none focus:ring-2";
+  
+  const variants = {
+    primary: "bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-300",
+    secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-200",
+    danger: "bg-red-500 text-white hover:bg-red-600 focus:ring-red-300"
+  };
+  
+  return (
+    <button className={`${baseStyles} ${variants[variant]}`}>
+      {children}
+    </button>
+  );
+}
+```
+
+## Conclusion
+
+Tailwind CSS has become a staple in modern web development for good reason. Its utility-first approach enables rapid development while maintaining a consistent design system. With Tailwind v4's improvements, styling applications has never been more efficient.
+
+In the next post, we'll explore how to integrate Tailwind with shadcn/ui components for even more powerful UI development. 

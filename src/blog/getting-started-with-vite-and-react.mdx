@@ -1,0 +1,149 @@
+---
+title: Getting Started with Vite and React
+description: Learn how to set up a new project with Vite and React
+date: 2024-04-12
+tags: [react, vite, typescript]
+---
+
+# Getting Started with Vite and React
+
+**Published on April 12, 2024**
+
+Vite has become one of the most popular build tools for modern web development due to its incredible speed and developer experience. In this post, we'll explore how to set up a new React project with Vite and TypeScript.
+
+## Why Vite?
+
+Vite (French for "quick") lives up to its name by leveraging native ES modules during development, providing lightning-fast hot module replacement (HMR). Some of the benefits include:
+
+- ⚡ Instant server start
+- 🔥 Blazing fast HMR
+- 📦 Optimized builds with Rollup
+- 🛠️ Rich features and plugins
+
+## Creating a New Vite Project
+
+To create a new project, run:
+
+```bash
+npm create vite@latest my-project -- --template react-ts
+cd my-project
+npm install
+npm run dev
+```
+
+This will scaffold a new Vite project with React and TypeScript support.
+
+## Understanding the Project Structure
+
+After creating your project, you'll have a structure similar to:
+
+```
+/
+├── public/          # Static assets
+│   ├── src/
+│   │   ├── assets/      # Project assets
+│   │   ├── App.tsx      # Main App component
+│   │   ├── main.tsx     # Entry point
+│   │   └── ...
+│   ├── index.html       # HTML entry
+│   └── vite.config.ts   # Vite configuration
+└── package.json     # Dependencies
+```
+
+## Adding Tailwind CSS
+
+Tailwind CSS works great with Vite. Here's how to add it:
+
+```bash
+npm install tailwindcss @tailwindcss/vite
+```
+
+Then, update your `vite.config.ts`:
+
+```typescript
+import path from "path";
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()]
+});
+```
+
+And in your CSS:
+
+```css
+@import "tailwindcss";
+```
+
+## Creating Your First Component
+
+Let's create a simple counter component in React:
+
+```tsx
+import { useState } from 'react'
+
+function Counter() {
+  const [count, setCount] = useState(0)
+  
+  return (
+    <div className="flex flex-col items-center gap-4 p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
+      <h2 className="text-2xl font-bold">Counter: {count}</h2>
+      <div className="flex gap-4">
+        <button 
+          onClick={() => setCount(count - 1)}
+          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+        >
+          Decrement
+        </button>
+        <button 
+          onClick={() => setCount(count + 1)}
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+        >
+          Increment
+        </button>
+      </div>
+    </div>
+  )
+}
+```
+
+## Adding Path Aliases
+
+Path aliases can make imports cleaner. Update your `vite.config.ts`:
+
+```typescript
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+});
+```
+
+Now you can import using `@/` instead of relative paths:
+
+```typescript
+import Counter from '@/components/Counter';
+```
+
+## Deploying Your Vite App
+
+When ready to deploy, build your app:
+
+```bash
+npm run build
+```
+
+This creates a `dist` folder with optimized assets ready for deployment.
+
+## Conclusion
+
+Vite provides an excellent developer experience for building modern React applications. Its speed and simplicity make it a top choice for new projects.
+
+In future posts, we'll explore more advanced features of Vite and how to integrate it with other tools in your development stack.
+
+Happy coding! 

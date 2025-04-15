@@ -1,0 +1,231 @@
+---
+title: Advanced React Patterns
+description: Exploring complex patterns and state management in React
+date: 2024-04-06
+tags: [react, advanced, patterns]
+---
+
+# Advanced React Patterns
+
+**Published on April 6, 2024**
+
+As your React applications grow in complexity, understanding advanced patterns becomes essential for maintaining clean, maintainable, and performant code. In this post, we'll explore some of the most powerful React patterns that can level up your development skills.
+
+## Compound Components
+
+The Compound Component pattern allows you to create components that work together to form a cohesive unit while maintaining flexibility and control.
+
+```jsx
+// Example of Compound Components
+function Tabs({ children, defaultIndex = 0 }) {
+  const [activeIndex, setActiveIndex] = useState(defaultIndex);
+  
+  return (
+    <TabsContext.Provider value={{ activeIndex, setActiveIndex }}>
+      {children}
+    </TabsContext.Provider>
+  );
+}
+
+Tabs.Tab = function Tab({ index, children }) {
+  const { activeIndex, setActiveIndex } = useContext(TabsContext);
+  
+  return (
+    <button 
+      className={`tab ${activeIndex === index ? 'active' : ''}`}
+      onClick={() => setActiveIndex(index)}
+    >
+      {children}
+    </button>
+  );
+};
+
+Tabs.Panel = function Panel({ index, children }) {
+  const { activeIndex } = useContext(TabsContext);
+  
+  return activeIndex === index ? <div className="panel">{children}</div> : null;
+};
+
+// Usage
+<Tabs>
+  <div className="tabs-list">
+    <Tabs.Tab index={0}>First Tab</Tabs.Tab>
+    <Tabs.Tab index={1}>Second Tab</Tabs.Tab>
+  </div>
+  <Tabs.Panel index={0}>First panel content</Tabs.Panel>
+  <Tabs.Panel index={1}>Second panel content</Tabs.Panel>
+</Tabs>
+```
+
+This pattern gives you control over the rendering while maintaining the relationship between related components.
+
+## Render Props
+
+The Render Props pattern allows you to share code between components using a prop whose value is a function.
+
+```jsx
+function MouseTracker({ render }) {
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  
+  useEffect(() => {
+    function handleMouseMove(event) {
+      setPosition({ x: event.clientX, y: event.clientY });
+    }
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+  
+  return render(position);
+}
+
+// Usage
+<MouseTracker
+  render={({ x, y }) => (
+    <div>
+      <h1>Mouse position:</h1>
+      <p>X: {x}, Y: {y}</p>
+    </div>
+  )}
+/>
+```
+
+## Custom Hooks
+
+Custom hooks allow you to extract component logic into reusable functions.
+
+```jsx
+function useLocalStorage(key, initialValue) {
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error(error);
+      return initialValue;
+    }
+  });
+  
+  const setValue = (value) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  return [storedValue, setValue];
+}
+
+// Usage
+function App() {
+  const [name, setName] = useLocalStorage('name', 'John');
+  
+  return (
+    <div>
+      <input
+        type="text"
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
+    </div>
+  );
+}
+```
+
+## Context + Reducer Pattern
+
+For complex state management, combining the Context API with useReducer can create a powerful state management solution similar to Redux, but native to React.
+
+```jsx
+// Create context
+const CounterContext = createContext();
+
+// Define reducer
+function counterReducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return { count: state.count + 1 };
+    case 'decrement':
+      return { count: state.count - 1 };
+    default:
+      throw new Error(`Unhandled action type: ${action.type}`);
+  }
+}
+
+// Provider component
+function CounterProvider({ children }) {
+  const [state, dispatch] = useReducer(counterReducer, { count: 0 });
+  const value = { state, dispatch };
+  
+  return (
+    <CounterContext.Provider value={value}>
+      {children}
+    </CounterContext.Provider>
+  );
+}
+
+// Custom hook for using the context
+function useCounter() {
+  const context = useContext(CounterContext);
+  if (context === undefined) {
+    throw new Error('useCounter must be used within a CounterProvider');
+  }
+  return context;
+}
+
+// Usage
+function Counter() {
+  const { state, dispatch } = useCounter();
+  return (
+    <div>
+      <p>Count: {state.count}</p>
+      <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
+      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <CounterProvider>
+      <Counter />
+    </CounterProvider>
+  );
+}
+```
+
+## Higher-Order Components (HOCs)
+
+While less common in the hooks era, HOCs are still useful for certain cross-cutting concerns.
+
+```jsx
+function withAuth(Component) {
+  return function AuthenticatedComponent(props) {
+    const { isAuthenticated, user } = useAuth();
+    
+    if (!isAuthenticated) {
+      return <Redirect to="/login" />;
+    }
+    
+    return <Component {...props} user={user} />;
+  };
+}
+
+// Usage
+const ProtectedPage = withAuth(UserDashboard);
+```
+
+## Conclusion
+
+These advanced React patterns give you powerful tools to solve complex UI challenges. The right pattern depends on your specific use case:
+
+- **Compound Components** - For related components that need shared state
+- **Render Props** - For sharing code between components
+- **Custom Hooks** - For reusing stateful logic across components
+- **Context + Reducer** - For complex state management
+- **HOCs** - For cross-cutting concerns
+
+Mastering these patterns will significantly enhance your ability to build sophisticated React applications with clean, maintainable code. 
