@@ -7,7 +7,7 @@ import { AboutPage } from "@/pages/about";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/ml-training-mdo">
       <Routes>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<HomePage />} />
